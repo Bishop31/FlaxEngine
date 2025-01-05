@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2023 Wojciech Figat. All rights reserved.
+// Copyright (c) 2012-2024 Wojciech Figat. All rights reserved.
 
 #pragma once
 
@@ -12,6 +12,7 @@
 API_CLASS(sealed, Namespace="FlaxEditor.Content.Settings") class FLAXENGINE_API LocalizationSettings : public SettingsBase
 {
     DECLARE_SCRIPTING_TYPE_MINIMAL(LocalizationSettings);
+
 public:
     /// <summary>
     /// The list of the string localization tables used by the game.

@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2023 Wojciech Figat. All rights reserved.
+// Copyright (c) 2012-2024 Wojciech Figat. All rights reserved.
 
 #include "ContentStorageManager.h"
 #include "FlaxFile.h"
@@ -252,6 +252,7 @@ void ContentStorageSystem::Job(int32 index)
 {
     PROFILE_CPU_NAMED("ContentStorage.Job");
 
+    const double time = Platform::GetTimeSeconds();
     ScopeLock lock(Locker);
     for (auto i = StorageMap.Begin(); i.IsNotEnd(); ++i)
     {
@@ -271,7 +272,7 @@ void ContentStorageSystem::Job(int32 index)
         }
         else
         {
-            storage->Tick();
+            storage->Tick(time);
         }
     }
 }

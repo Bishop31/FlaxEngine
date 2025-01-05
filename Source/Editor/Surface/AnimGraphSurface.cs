@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2023 Wojciech Figat. All rights reserved.
+// Copyright (c) 2012-2024 Wojciech Figat. All rights reserved.
 
 using System;
 using System.Collections.Generic;
@@ -88,6 +88,9 @@ namespace FlaxEditor.Surface
         };
 
         private static NodesCache _nodesCache = new NodesCache(IterateNodesCache);
+
+        /// <inheritdoc />
+        public override bool UseContextMenuDescriptionPanel => true;
 
         /// <summary>
         /// The state machine editing context menu.

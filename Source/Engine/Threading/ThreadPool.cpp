@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2023 Wojciech Figat. All rights reserved.
+// Copyright (c) 2012-2024 Wojciech Figat. All rights reserved.
 
 #include "ThreadPool.h"
 #include "IRunnable.h"
@@ -8,6 +8,7 @@
 #include "Engine/Core/Log.h"
 #include "Engine/Core/Math/Math.h"
 #include "Engine/Core/Types/String.h"
+#include "Engine/Core/Collections/Array.h"
 #include "Engine/Engine/Globals.h"
 #include "Engine/Engine/EngineService.h"
 #include "Engine/Platform/ConditionVariable.h"

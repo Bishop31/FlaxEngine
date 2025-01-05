@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2023 Wojciech Figat. All rights reserved.
+// Copyright (c) 2012-2024 Wojciech Figat. All rights reserved.
 
 #if PLATFORM_WINDOWS
 
@@ -770,12 +770,41 @@ void WindowsWindow::CheckForWindowResize()
     }
 }
 
-void WindowsWindow::UpdateCursor() const
+void WindowsWindow::UpdateCursor()
 {
-    if (_cursor == CursorType::Hidden)
+    // Don't hide cursor when window is not focused
+    if (_cursor == CursorType::Hidden && _focused)
     {
+        if (!_lastCursorHidden)
+        {
+            _lastCursorHidden = true;
+            while(::ShowCursor(FALSE) >= 0)
+            {
+                if (_cursorHiddenSafetyCount >= 100)
+                {
+                    LOG(Warning, "Cursor has failed to hide.");
+                    break;
+                }
+                _cursorHiddenSafetyCount += 1;
+            }
+            _cursorHiddenSafetyCount = 0;
+        }
         ::SetCursor(nullptr);
         return;
+    }
+    else if (_lastCursorHidden)
+    {
+        _lastCursorHidden = false;
+        while(::ShowCursor(TRUE) < 0)
+        {
+            if (_cursorHiddenSafetyCount >= 100)
+            {
+                LOG(Warning, "Cursor has failed to show.");
+                break;
+            }
+            _cursorHiddenSafetyCount += 1;
+        }
+        _cursorHiddenSafetyCount = 0;
     }
 
     int32 index = 0;
@@ -1234,6 +1263,7 @@ LRESULT WindowsWindow::WndProc(UINT msg, WPARAM wParam, LPARAM lParam)
         break;
     case WM_SETFOCUS:
         OnGotFocus();
+        UpdateCursor();
         if (_isClippingCursor && !_clipCursorSet)
         {
             _clipCursorSet = true;
@@ -1247,6 +1277,7 @@ LRESULT WindowsWindow::WndProc(UINT msg, WPARAM wParam, LPARAM lParam)
             ClipCursor(nullptr);
         }
         OnLostFocus();
+        UpdateCursor();
         break;
     case WM_ACTIVATEAPP:
         if (wParam == TRUE && !_focused)
@@ -1261,6 +1292,7 @@ LRESULT WindowsWindow::WndProc(UINT msg, WPARAM wParam, LPARAM lParam)
                 SetIsFullscreen(false);
             }
         }
+        UpdateCursor();
         break;
     case WM_MENUCHAR:
         // A menu is active and the user presses a key that does not correspond to any mnemonic or accelerator key so just ignore and don't beep

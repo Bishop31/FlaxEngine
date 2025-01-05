@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2023 Wojciech Figat. All rights reserved.
+// Copyright (c) 2012-2024 Wojciech Figat. All rights reserved.
 
 #if PLATFORM_TOOLS_WINDOWS
 
@@ -494,11 +494,11 @@ bool WindowsPlatformTools::OnDeployBinaries(CookingData& data)
 {
     const auto platformSettings = WindowsPlatformSettings::Get();
 
-    // Apply executable icon
     Array<String> files;
     FileSystem::DirectoryGetFiles(files, data.NativeCodeOutputPath, TEXT("*.exe"), DirectorySearchOption::TopDirectoryOnly);
     if (files.HasItems())
     {
+        // Apply executable icon
         TextureData iconData;
         if (!EditorUtilities::GetApplicationImage(platformSettings->OverrideIcon, iconData))
         {
@@ -508,9 +508,30 @@ bool WindowsPlatformTools::OnDeployBinaries(CookingData& data)
                 return true;
             }
         }
+
+        // Rename app
+        const String newName = EditorUtilities::GetOutputName();
+        const StringView oldName = StringUtils::GetFileNameWithoutExtension(files[0]);
+        if (newName != oldName)
+        {
+            if (FileSystem::MoveFile(data.NativeCodeOutputPath / newName + TEXT(".exe"), files[0], true))
+            {
+                data.Error(String::Format(TEXT("Failed to change output executable name from '{}' to '{}'."), oldName, newName));
+                return true;
+            }
+        }
     }
 
     return false;
+}
+
+void WindowsPlatformTools::OnBuildStarted(CookingData& data)
+{
+    // Remove old executable
+    Array<String> files;
+    FileSystem::DirectoryGetFiles(files, data.NativeCodeOutputPath, TEXT("*.exe"), DirectorySearchOption::TopDirectoryOnly);
+    for (auto& file : files)
+        FileSystem::DeleteFile(file);
 }
 
 void WindowsPlatformTools::OnRun(CookingData& data, String& executableFile, String& commandLineFormat, String& workingDir)

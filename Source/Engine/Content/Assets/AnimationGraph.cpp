@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2023 Wojciech Figat. All rights reserved.
+// Copyright (c) 2012-2024 Wojciech Figat. All rights reserved.
 
 #include "AnimationGraph.h"
 #if USE_EDITOR
@@ -222,12 +222,10 @@ void AnimationGraph::FindDependencies(AnimGraphBase* graph)
     }
 }
 
-void AnimationGraph::GetReferences(Array<Guid>& output) const
+void AnimationGraph::GetReferences(Array<Guid>& assets, Array<String>& files) const
 {
-    // Base
-    BinaryAsset::GetReferences(output);
-
-    Graph.GetReferences(output);
+    BinaryAsset::GetReferences(assets, files);
+    Graph.GetReferences(assets);
 }
 
 #endif

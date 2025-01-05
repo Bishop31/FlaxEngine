@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2023 Wojciech Figat. All rights reserved.
+// Copyright (c) 2012-2024 Wojciech Figat. All rights reserved.
 
 using System;
 using System.Linq;
@@ -146,7 +146,7 @@ namespace FlaxEditor.Viewport
             var gridPlane = new Plane(Vector3.Zero, Vector3.Up);
             var flags = SceneGraphNode.RayCastData.FlagTypes.SkipColliders | SceneGraphNode.RayCastData.FlagTypes.SkipEditorPrimitives;
             hit = _owner.SceneGraphRoot.RayCast(ref ray, ref view, out var closest, out var normal, flags);
-            var girdGizmo = (GridGizmo)_owner.Gizmos.FirstOrDefault(x => x is GridGizmo);
+            var girdGizmo = _owner.Gizmos.Get<GridGizmo>();
             if (hit != null)
             {
                 // Use hit location
@@ -180,7 +180,7 @@ namespace FlaxEditor.Viewport
             var location = hitLocation + new Vector3(0, bottomToCenter, 0);
 
             // Apply grid snapping if enabled
-            var transformGizmo = (TransformGizmo)_owner.Gizmos.FirstOrDefault(x => x is TransformGizmo);
+            var transformGizmo = _owner.Gizmos.Get<TransformGizmo>();
             if (transformGizmo != null && (_owner.UseSnapping || transformGizmo.TranslationSnapEnable))
             {
                 float snapValue = transformGizmo.TranslationSnapValue;
@@ -234,7 +234,6 @@ namespace FlaxEditor.Viewport
                         LocalOrientation = RootNode.RaycastNormalRotation(ref hitNormal),
                         Name = item.ShortName
                     };
-                    DebugDraw.DrawWireArrow(PostProcessSpawnedActorLocation(actor, ref hitNormal), actor.LocalOrientation, 1.0f, Color.Red, 1000000);
                     Spawn(actor, ref hitLocation, ref hitNormal);
                 }
                 else if (hit is StaticModelNode staticModelNode)

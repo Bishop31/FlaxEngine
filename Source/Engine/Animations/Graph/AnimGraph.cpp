@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2023 Wojciech Figat. All rights reserved.
+// Copyright (c) 2012-2024 Wojciech Figat. All rights reserved.
 
 #include "AnimGraph.h"
 #include "Engine/Animations/Animations.h"
@@ -100,6 +100,34 @@ AnimGraphInstanceData::OutgoingEvent AnimGraphInstanceData::ActiveEvent::End(Ani
     out.DeltaTime = 0.0f;
     out.Type = OutgoingEvent::OnEnd;
     return out;
+}
+
+AnimGraphNode::~AnimGraphNode()
+{
+    // Free allocated memory
+    switch (GroupID)
+    {
+    // Animation
+    case 9:
+        switch (TypeID)
+        {
+        // Multi Blend 1D
+        case 12:
+            Allocator::Free(Data.MultiBlend1D.IndicesSorted);
+            break;
+        // Multi Blend 2D
+        case 13:
+            Allocator::Free(Data.MultiBlend2D.Triangles);
+            break;
+        // State
+        case 20:
+        // Any State
+        case 34:
+            Allocator::Free(Data.State.Transitions);
+            break;
+        }
+        break;
+    }
 }
 
 AnimGraphImpulse* AnimGraphNode::GetNodes(AnimGraphExecutor* executor)
@@ -221,6 +249,7 @@ void AnimGraphExecutor::Update(AnimGraphInstanceData& data, float dt)
         context.NodePath.Clear();
         context.Data = &data;
         context.DeltaTime = dt;
+        context.StackOverFlow = false;
         context.CurrentFrameIndex = ++data.CurrentFrame;
         context.CallStack.Clear();
         context.Functions.Clear();
@@ -411,9 +440,12 @@ VisjectExecutor::Value AnimGraphExecutor::eatBox(Node* caller, Box* box)
     auto& context = *Context.Get();
 
     // Check if graph is looped or is too deep
+    if (context.StackOverFlow)
+        return Value::Zero;
     if (context.CallStack.Count() >= ANIM_GRAPH_MAX_CALL_STACK)
     {
         OnError(caller, box, TEXT("Graph is looped or too deep!"));
+        context.StackOverFlow = true;
         return Value::Zero;
     }
 #if !BUILD_RELEASE

@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2023 Wojciech Figat. All rights reserved.
+// Copyright (c) 2012-2024 Wojciech Figat. All rights reserved.
 
 #include "MaterialBase.h"
 #include "MaterialInstance.h"
@@ -45,3 +45,13 @@ MaterialInstance* MaterialBase::CreateVirtualInstance()
     instance->SetBaseMaterial(this);
     return instance;
 }
+
+#if USE_EDITOR
+
+void MaterialBase::GetReferences(Array<Guid>& assets, Array<String>& files) const
+{
+    BinaryAsset::GetReferences(assets, files);
+    Params.GetReferences(assets);
+}
+
+#endif

@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2023 Wojciech Figat. All rights reserved.
+// Copyright (c) 2012-2024 Wojciech Figat. All rights reserved.
 
 #include "Animations.h"
 #include "AnimEvent.h"
@@ -35,7 +35,7 @@ public:
 
 namespace
 {
-    FORCE_INLINE bool CanUpdateModel(AnimatedModel* animatedModel)
+    FORCE_INLINE bool CanUpdateModel(const AnimatedModel* animatedModel)
     {
         auto skinnedModel = animatedModel->SkinnedModel.Get();
         auto animGraph = animatedModel->AnimationGraph.Get();

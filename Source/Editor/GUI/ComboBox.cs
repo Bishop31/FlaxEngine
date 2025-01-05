@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2023 Wojciech Figat. All rights reserved.
+// Copyright (c) 2012-2024 Wojciech Figat. All rights reserved.
 
 using System;
 using System.Collections.Generic;
@@ -554,7 +554,7 @@ namespace FlaxEditor.GUI
             // Check if has selected item
             if (_selectedIndices != null && _selectedIndices.Count > 0)
             {
-                string text = _selectedIndices.Count == 1 ? _items[_selectedIndices[0]] : "Multiple Values";
+                string text = _selectedIndices.Count == 1 ? (_selectedIndices[0] >= 0 && _selectedIndices[0] < _items.Count ? _items[_selectedIndices[0]] : "") : "Multiple Values";
 
                 // Draw text of the selected item
                 float textScale = Height / DefaultHeight;
